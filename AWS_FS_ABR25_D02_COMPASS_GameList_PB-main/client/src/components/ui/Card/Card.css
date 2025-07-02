@@ -1,0 +1,66 @@
+#card {
+  width: 22.5rem;
+  height: 11rem;
+
+  display: flex;
+
+  border-radius: 0.5rem;
+  border: 1px solid #6c6c6c;
+  background: #262626;
+  color: #fff;
+  padding: 1rem 1rem;
+  cursor: pointer;
+
+  transition: all 0.3s ease-in-out;
+  
+  .content {
+    & .card-icon > * {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    & span {
+      font-family: Montserrat;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-top: 0.5rem;
+    }
+
+    & .card-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2.25rem;
+
+      font-family: Montserrat;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #6c6c6c;
+
+      transition: all 0.3s ease-in-out;
+
+      & .plus-icon {
+        width: 0.625rem;
+        height: 0.625rem;
+        stroke-width: 2px;
+      }
+    }
+
+    & .card-button:hover {
+      background-color: #6c6c6c;
+      color: #FFF;
+      scale: 1.05;
+    }
+  }
+
+  .card-total {
+    font-family: Montserrat;
+    font-size: 1.875rem;
+  }
+}
+
+#card:hover {
+  scale: 1.05;
+  transform: translateY(-0.5rem);
+}

@@ -1,0 +1,52 @@
+#platform {
+  display: flex;
+  height: 100vh;
+}
+
+#platform .platform-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.platform-page {
+  background-color: #0c0a09;
+  flex: 1;
+  padding-inline: 3rem;
+  padding-bottom: 2rem;
+}
+
+.platform-page .new-platorm-button {
+  width: auto;
+  height: 1.875rem;
+  margin-left: 1.5rem;
+  margin-bottom: 2rem;
+  padding-inline: 1rem;
+
+  color: #fff;
+  background-color: #42d9c8;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  text-align: center;
+
+  transition: background-color 0.2s ease-in-out;
+}
+
+.platform-page .new-platorm-button:hover {
+  background-color: #3abead;
+}
+
+.platform-page .cell-image img {
+  max-width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 0.25rem;
+}
+
+.platform-page .cell-category {
+  justify-self: center;
+}
