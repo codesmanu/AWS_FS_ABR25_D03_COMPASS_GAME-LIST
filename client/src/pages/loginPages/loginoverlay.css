@@ -9,7 +9,7 @@
   min-height: 100vh;
   background-size: cover;
   background-position: center;
-  background-image: url(/src/pages/loginPages/assets/image\ 1.svg);
+  background-image: url("../../assets/image.png");
 }
 
 

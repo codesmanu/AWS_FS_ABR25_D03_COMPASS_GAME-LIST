@@ -4,7 +4,7 @@ import './index.css';
 import App from './App.tsx';
 import { ClerkProvider } from '@clerk/clerk-react'
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const PUBLISHABLE_KEY = "pk_test_Y3J1Y2lhbC1jaGVldGFoLTg0LmNsZXJrLmFjY291bnRzLmRldiQ"
 
 if (!PUBLISHABLE_KEY) {
 throw new Error('Missing Publishable Key')
