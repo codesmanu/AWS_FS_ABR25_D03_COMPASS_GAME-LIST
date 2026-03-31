@@ -1,6 +1,18 @@
 import type { GameEntity, GameView, CreateGameInput, UpdateGame, GameQueryFilters } from './game.types';
 import Database from '@/shared/database';
 
+const normalizeDate = (value: string | Date | null | undefined): Date | null | undefined => {
+    if (value === null || value === undefined) return null;
+    if (value instanceof Date) {
+        if (Number.isNaN(value.valueOf())) throw new Error('INVALID_DATE_FORMAT');
+        return value;
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.valueOf())) throw new Error('INVALID_DATE_FORMAT');
+    return parsed;
+};
+
 const toView = (game: GameEntity): GameView => ({
     id: game.id,
     title: game.title,
@@ -45,11 +57,18 @@ const findById = async (id: string, ownerId: string): Promise<GameView | null> =
 };
 
 const create = async (gameData: CreateGameInput, ownerId: string): Promise<GameView> => {
+    const dataToCreate = {
+        ...gameData,
+        acquisitionDate: normalizeDate(gameData.acquisitionDate) as Date,
+        finishDate:
+            gameData.finishDate === null
+                ? null
+                : normalizeDate(gameData.finishDate),
+        accountId: ownerId,
+    };
+
     const created = await Database.game.create({
-        data: {
-            ...gameData,
-            accountId: ownerId,
-        },
+        data: dataToCreate,
     });
     return toView(created);
 };
@@ -58,9 +77,22 @@ const updateById = async (id: string, ownerId: string, gameData: UpdateGame): Pr
     const game = await Database.game.findUnique({ where: { id } });
     if (!game || game.deletedAt || game.accountId !== ownerId) return null;
 
+    const dataToUpdate: any = { ...gameData };
+
+    if (gameData.acquisitionDate !== undefined) {
+        dataToUpdate.acquisitionDate = normalizeDate(gameData.acquisitionDate);
+    }
+
+    if (gameData.finishDate !== undefined) {
+        dataToUpdate.finishDate =
+            gameData.finishDate === null
+                ? null
+                : normalizeDate(gameData.finishDate);
+    }
+
     const updated = await Database.game.update({
         where: { id },
-        data: gameData,
+        data: dataToUpdate,
     });
     return toView(updated);
 };

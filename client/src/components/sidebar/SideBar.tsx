@@ -1,14 +1,11 @@
+import { IoHomeOutline, IoGameControllerOutline, IoPricetagOutline, IoHardwareChipOutline } from 'react-icons/io5';
 import Button from '../ui/Button/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Coockie from 'js-cookie';
+import logo from "@/assets/logo.svg";
 
 import './SideBar.css';
 import { VscSignOut } from 'react-icons/vsc';
-import {
-    IoHomeOutline,
-    IoGameControllerOutline,
-    IoPricetagOutline,
-    IoHardwareChipOutline,
-} from 'react-icons/io5';
 
 type SideBarProps = {
     isOpen: boolean;
@@ -25,10 +22,15 @@ const Sidebar = ({ isOpen }: SideBarProps) => {
         return location.pathname.startsWith(path);
     };
 
+    const signOut = ({ redirectUrl }: { redirectUrl: string }) => {
+        Coockie.remove('token');
+        window.location.href = redirectUrl;
+    };
+
     return (
         <>
             <div className={`${isOpen ? 'sidebar' : 'closed-sidebar'}`}>
-                <img src="/logo.svg" className="logo" />
+                <img src={logo} className="logo" />
 
                 <div className="navigation">
                     <Button

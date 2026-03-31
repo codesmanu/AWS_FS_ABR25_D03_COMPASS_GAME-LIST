@@ -40,6 +40,8 @@ export default (error: unknown, req: Request, res: Response, next: NextFunction)
             LOGIN_ALREADY_EXISTS: { status: 409, code: 'LOGIN_ALREADY_EXISTS' },
             ACCOUNT_CREATION_FAILED: { status: 500, code: 'ACCOUNT_CREATION_FAILED' },
             INVALID_CREDENTIALS: { status: 401, code: 'INVALID_CREDENTIALS' },
+            NICKNAME_REQUIRED: { status: 400, code: 'NICKNAME_REQUIRED' },
+            INVALID_INPUT: { status: 400, code: 'INVALID_INPUT' },
             'A category with this name already exists.': { status: 409, code: 'CATEGORY_ALREADY_EXISTS' },
             'Another category with this name already exists.': { status: 409, code: 'CATEGORY_NAME_DUPLICATE' },
         };

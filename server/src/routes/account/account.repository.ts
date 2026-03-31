@@ -1,9 +1,10 @@
-import type { CreateAccountInput, AccountView, AccountEntity, UpdateAccount } from "@/routes/account/account.types";
+import type { CreateAccount, AccountView, AccountEntity, UpdateAccount } from "@/routes/account/account.types";
 import Database from '@/shared/database';
 
-const create = async (accountData: CreateAccountInput): Promise<AccountView | null> => {
+const create = async (accountData: CreateAccount): Promise<AccountView | null> => {
     const account = await Database.account.create({
         data: {
+            nickname: accountData.nickname,
             email: accountData.email,
             password: accountData.password,
         },

@@ -32,6 +32,11 @@ const RegisterLogin = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!nickname || nickname.trim().length < 3) {
+            errorNotify('Nickname must be at least 3 characters long');
+            return;
+        }
+
         if (password !== confirmPassword) {
             errorNotify('Passwords do not match');
             return;

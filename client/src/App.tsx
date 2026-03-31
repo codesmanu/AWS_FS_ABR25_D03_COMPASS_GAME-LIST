@@ -20,8 +20,10 @@ export default function App() {
         setLoading(true);
         const checkAuth = async () => {
             try {
-                const { token } = await GET<{ token: string }>('/account/refresh');
+                const { token, account } = await GET<{ token: string, account: { nickname: string } }>('/account/refresh');
                 Coockie.set('token', token);
+                console.log(account.nickname)
+                sessionStorage.setItem('nickname', account.nickname);
                 setAuthenticated(true);
             } catch {
                 Coockie.remove('token');

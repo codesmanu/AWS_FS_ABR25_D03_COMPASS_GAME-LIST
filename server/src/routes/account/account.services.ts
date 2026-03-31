@@ -1,16 +1,25 @@
-import type { CreateAccountInput, AccountView, Login, UpdateAccount, LoginResponse, DeleteAccountResponse } from "./account.types";
+import type { CreateAccount, AccountView, Login, UpdateAccount, LoginResponse, DeleteAccountResponse } from "./account.types";
 import Repository from '@/routes/account/account.repository';
 import Password from '@/shared/password';
 import Token from '@/shared/token';
 
-const create = async (input: CreateAccountInput): Promise<AccountView> => {
+const create = async (input: CreateAccount): Promise<AccountView> => {
+    if (!input.nickname || input.nickname.trim().length < 3) {
+        throw new Error('NICKNAME_REQUIRED');
+    }
+
+    if (!input.email || !input.password) {
+        throw new Error('INVALID_INPUT');
+    }
+
     const existing = await Repository.findByEmail(input.email);
 
     if (existing) throw new Error('LOGIN_ALREADY_EXISTS');
 
     const hashedPassword = await Password.Hash(input.password);
     const account = await Repository.create({
-        email: input.email,
+        nickname: input.nickname.trim(),
+        email: input.email.toLowerCase().trim(),
         password: hashedPassword,
     });
 
