@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
 import { fetchDashboardSummary } from '../../utils/apiClient';
 import { toast } from 'react-toastify';
 

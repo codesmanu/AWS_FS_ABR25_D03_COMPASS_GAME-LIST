@@ -1,105 +1,57 @@
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { useState, useEffect, lazy } from 'react';
+import { GET } from './utils/apiClient';
+import Coockie from 'js-cookie';
 
-import Home from './pages/home/Home';
-import Login from './pages/login/login';
-import RegisterLogin from './pages/login/register';
-import Platform from './pages/platforms/Platform';
-import { SignedIn, SignedOut } from '@clerk/clerk-react';
-import Games from './pages/games/Games';
-import Categories from './pages/categories/Categories';
+const Loading = lazy(() => import('@/components/loading/Loading'));
+const Home = lazy(() => import('@/pages/home/Home'));
+const Login = lazy(() => import('@/pages/login/login'));
+const Register = lazy(() => import('@/pages/login/register'));
+const Platform = lazy(() => import('@/pages/platforms/Platform'));
+const Games = lazy(() => import('@/pages/games/Games'));
+const Categories = lazy(() => import('@/pages/categories/Categories'));
 
 export default function App() {
+
+    const [authenticated, setAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setLoading(true);
+        const checkAuth = async () => {
+            try {
+                const { token } = await GET<{ token: string }>('/account/refresh');
+                Coockie.set('token', token);
+                setAuthenticated(true);
+            } catch {
+                Coockie.remove('token');
+                setAuthenticated(false);
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkAuth();
+    }, []);
+
+    if (loading) return <Loading />;
+
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route
-                    path="/login"
-                    element={
-                        <SignedOut>
-                            <Login />
-                        </SignedOut>
-                    }
-                />
-
-                <Route
-                    path="/register"
-                    element={
-                        <SignedOut>
-                            <RegisterLogin />
-                        </SignedOut>
-                    }
-                />
-
-                <Route
-                    path="/dashboard"
-                    element={
-                        <>
-                            <SignedIn>
-                                <Home />
-                            </SignedIn>
-                            <SignedOut>
-                                <Navigate to="/login" replace />
-                            </SignedOut>
-                        </>
-                    }
-                />
-
-                <Route
-                    path="/games"
-                    element={
-                        <>
-                            <SignedIn>
-                                <Games />
-                            </SignedIn>
-                            <SignedOut>
-                                <Navigate to="/login" replace />
-                            </SignedOut>
-                        </>
-                    }
-                />
-
-                <Route
-                    path="/categories"
-                    element={
-                        <>
-                            <SignedIn>
-                                <Categories />
-                            </SignedIn>
-                            <SignedOut>
-                                <Navigate to="/login" replace />
-                            </SignedOut>
-                        </>
-                    }
-                />
-
-                <Route
-                    path="/platforms"
-                    element={
-                        <>
-                            <SignedIn>
-                                <Platform />
-                            </SignedIn>
-                            <SignedOut>
-                                <Navigate to="/login" replace />
-                            </SignedOut>
-                        </>
-                    }
-                />
-
-                <Route
-                    path="*"
-                    element={
-                        <>
-                            <SignedIn>
-                                <Navigate to="/dashboard" replace />
-                            </SignedIn>
-                            <SignedOut>
-                                <Navigate to="/login" replace />
-                            </SignedOut>
-                        </>
-                    }
-                />
-            </Routes>
-        </BrowserRouter>
+        <Routes>
+            {authenticated ? (
+                <>
+                    <Route path="/dashboard" element={<Home />} />
+                    <Route path="/games" element={<Games />} />
+                    <Route path="/categories" element={<Categories />} />
+                    <Route path="/platforms" element={<Platform />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </>
+            ) : (
+                <>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="*" element={<Navigate to="/login" replace />} />
+                </>
+            )}
+        </Routes>
     );
 }

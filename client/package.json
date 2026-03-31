@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.31.8",
     "axios": "^1.9.0",
     "js-cookie": "^3.0.5",
     "react": "^19.1.0",
