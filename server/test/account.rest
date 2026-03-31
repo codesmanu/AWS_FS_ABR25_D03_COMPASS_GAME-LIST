@@ -1,0 +1,56 @@
+@base = http://localhost:3000
+
+### Criar conta (self-register)
+# @name register
+POST {{base}}/api/account/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "secret123"
+}
+
+### Login (retorna token)
+# @name login
+POST {{base}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "secret123"
+}
+
+### Verificar token
+GET {{base}}/api/account/check
+Cookie: token={{login.response.body.token}}
+
+### Refresh token (self)
+POST {{base}}/api/account/refresh
+Cookie: token={{login.response.body.token}}
+
+### Atualizar conta (self)
+PATCH {{base}}/api/account
+Content-Type: application/json
+Cookie: token={{login.response.body.token}}
+
+{
+  "nickname": "usuario1",
+  "password": "secret1234"
+}
+
+### Verificar login novo password
+POST {{base}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "secret1234"
+}
+
+### Deletar conta (self)
+DELETE {{base}}/api/account
+Cookie: token={{login.response.body.token}}
+
+### Ativar conta (self)
+PATCH {{base}}/api/account/activate
+Cookie: token={{login.response.body.token}}

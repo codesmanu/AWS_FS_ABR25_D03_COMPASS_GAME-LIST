@@ -1,88 +1,87 @@
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+    provider = "sqlite"
 }
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
-model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  fullName  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
-  deletedAt DateTime?
+model Account {
+    id        String    @id @default(uuid())
+    email     String    @unique
+    password  String
+    nickname  String?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
 
-  games     Game[]
-  
-  @@map("users")
+    games      Game[]
+    categories Category[]
+    platforms  Platform[]
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique             
-  description String?                       
-  createdAt   DateTime  @default(now())     
-  updatedAt   DateTime  @updatedAt          
-  isDeleted   Boolean   @default(false)     
-  deletedAt   DateTime?                     
+    id          String    @id @default(uuid())
+    name        String
+    description String?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    deletedAt   DateTime?
 
-  games       Game[]
+    accountId String
+    account   Account @relation(fields: [accountId], references: [id])
 
-  @@map("categories")
+    games Game[]
+
+    @@unique([accountId, name])
 }
 
 model Platform {
-  id               String    @id @default(cuid())
-  name             String    @unique             
-  company          String?                       
-  acquisitionYear  Int?                          
-  imageUrl         String?                       
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  isDeleted        Boolean   @default(false)     
-  deletedAt        DateTime?                     
+    id              String    @id @default(uuid())
+    name            String
+    company         String?
+    acquisitionYear Int?
+    imageUrl        String?
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+    deletedAt       DateTime?
 
-  games            Game[]
+    accountId String
+    account   Account @relation(fields: [accountId], references: [id])
 
-  @@map("platforms")
+    games Game[]
+
+    @@unique([accountId, name])
 }
 
 enum GameStatus {
-  PLAYING    
-  COMPLETED  
-  WISHLIST   
-  BACKLOG    
-  DROPPED    
-  ON_HOLD    
+    PLAYING
+    COMPLETED
+    WISHLIST
+    BACKLOG
+    DROPPED
+    ON_HOLD
 }
 
 model Game {
-  id               String     @id @default(cuid())
-  title            String
-  description      String?
-  imageUrl         String?
-  acquisitionDate  DateTime   
-  finishDate       DateTime?  
-  status           GameStatus 
-  isFavorite       Boolean    @default(false)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  isDeleted        Boolean    @default(false)
-  deletedAt        DateTime?
+    id              String     @id @default(uuid())
+    title           String
+    description     String?
+    imageUrl        String?
+    acquisitionDate DateTime
+    finishDate      DateTime?
+    status          GameStatus
+    isFavorite      Boolean    @default(false)
+    createdAt       DateTime   @default(now())
+    updatedAt       DateTime   @updatedAt
+    deletedAt       DateTime?
 
-  userId           String
-  user             User       @relation(fields: [userId], references: [id])
+    accountId String
+    account   Account @relation(fields: [accountId], references: [id])
 
-  categoryId       String
-  category         Category   @relation(fields: [categoryId], references: [id])
+    categoryId String?
+    category   Category? @relation(fields: [categoryId], references: [id])
 
-  platformId       String?
-  platform         Platform?  @relation(fields: [platformId], references: [id])
-
-  @@map("games")
+    platformId String?
+    platform   Platform? @relation(fields: [platformId], references: [id])
 }

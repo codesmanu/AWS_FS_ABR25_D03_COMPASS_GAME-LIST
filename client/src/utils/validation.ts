@@ -1,5 +1,5 @@
-export const isValidFullName = (fullName: string): boolean => {
-  return !!fullName && fullName.trim().length >= 3;
+export const isValidnickname = (nickname: string): boolean => {
+  return !!nickname && nickname.trim().length >= 3;
 };
 
 export const isValidEmail = (email: string): boolean => {

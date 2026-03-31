@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builer
+FROM node:24-alpine AS builer
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN npm run build
 
 RUN npm prune --production
 
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 

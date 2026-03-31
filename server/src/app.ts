@@ -1,36 +1,32 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import 'dotenv/config';
+import express from 'express';
+import morgan from 'morgan';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import cookie_parser from 'cookie-parser';
 
-import authRoutes from './routes/authRoutes.js';
-import dashboardRoutes from './routes/dashboardRoutes.js';
-import gameRoutes from './routes/gameRoutes.js';
-import categoryRoutes from './routes/categoryRoutes.js';
-import platformRoutes from './routes/platformRoutes.js';
+import routes from '@/routes/hub';
+import error from '@/shared/error';
 
-dotenv.config();
+const app = express();
 
-const app: Express = express();
-
-app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cookie_parser());
+app.use(morgan('dev'));
 
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'UP', timestamp: new Date().toISOString() });
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+}));
+
+app.use('/api', routes);
+app.use((req, res) => {
+    res.status(404).json({
+        status: 'error',
+        code: 404,
+        message: `Route ${req.method} ${req.originalUrl} not found`
+    });
 });
-
-app.use('/api/auth', authRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/games', gameRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/platforms', platformRoutes);
-
-app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-  console.error('Unhandled error:', err.stack || err.message);
-  res.status(500).json({
-    message: 'Internal Server Error',
-  });
-});
+app.use(error);
 
 export default app;
