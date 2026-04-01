@@ -1,8 +1,13 @@
-import { IoHomeOutline, IoGameControllerOutline, IoPricetagOutline, IoHardwareChipOutline } from 'react-icons/io5';
+import {
+    IoHomeOutline,
+    IoGameControllerOutline,
+    IoPricetagOutline,
+    IoHardwareChipOutline,
+} from 'react-icons/io5';
 import Button from '../ui/Button/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Coockie from 'js-cookie';
-import logo from "@/assets/logo.svg";
+import logo from '@/assets/logo.svg';
 
 import './SideBar.css';
 import { VscSignOut } from 'react-icons/vsc';

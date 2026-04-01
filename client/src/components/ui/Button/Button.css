@@ -1,10 +1,10 @@
 .button-global {
-  cursor: pointer;
+    cursor: pointer;
 
-  width: 7.375rem;
-  height: 1.875rem;
+    width: 7.375rem;
+    height: 1.875rem;
 
-  border: none;
-  border-radius: .5rem;
-  background-color: #FFF;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: var(--color-white);
 }

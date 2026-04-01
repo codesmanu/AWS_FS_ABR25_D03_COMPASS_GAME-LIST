@@ -12,13 +12,11 @@
     margin: 0;
     display: flex;
     position: relative;
-    background: #FFFFFF;
+    background: var(--color-white);
     border-radius: 20px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-
 }
 
 .remove-close {
@@ -31,9 +29,8 @@
     font-size: 20px;
     font-weight: bold;
     margin-top: 2px;
-    color: #000000;
-    background: #FFFFFF;
-
+    color: var(--color-black);
+    background: var(--color-white);
 }
 
 .remove-icon {
@@ -42,25 +39,21 @@
     background-image: url('./assets/warning.svg');
     background-size: cover;
     margin-bottom: 50px;
-
-
-
 }
 
 .remove-container .remove-text {
-    background: #FFFFFF;
+    background: var(--color-white);
     margin-bottom: 20px;
 }
 
 .remove-container .remove-text h1 {
-    font-family: "Montserrat", sans-serif;
+    font-family: 'Montserrat', sans-serif;
     text-align: center;
     font-size: 28px;
     font-weight: 600;
-    color: #000000;
+    color: var(--color-black);
     line-height: 100%;
-    background: #FFFFFF;
-
+    background: var(--color-white);
 }
 
 .remove-container .remove-text p {
@@ -69,11 +62,9 @@
     text-align: center;
     font-size: 14px;
     margin: 20px 0 15px;
-    color: #000000;
+    color: var(--color-black);
     font-weight: 400;
-    background: #FFFFFF;
-
-
+    background: var(--color-white);
 }
 
 .remove-container .remove-buttons {
@@ -82,7 +73,6 @@
     justify-content: space-around;
     align-items: center;
     margin-top: 20px;
-
 }
 
 .remove-button_no,
@@ -92,17 +82,16 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 12px;
-    
 }
 
 .remove-button_no {
-    background-color: #FFFFFF;
-    border: 1px solid #000000;
-    color: #000000;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-black);
+    color: var(--color-black);
 }
 
 .remove-button_yes {
-    background-color: #FD4760;
-    color: #FFFFFF;
+    background-color: var(--color-danger);
+    color: var(--color-white);
     border: none;
 }

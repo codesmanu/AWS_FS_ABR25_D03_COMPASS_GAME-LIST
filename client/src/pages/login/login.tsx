@@ -32,7 +32,10 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const { token } = await POST<{ token: string }>('/account/login', { email, password });
+            const { token } = await POST<{ token: string }>('/account/login', {
+                email,
+                password,
+            });
             if (token) {
                 Coockie.set('token', token);
                 successNotify('Login successful!');
@@ -100,7 +103,8 @@ const Login = () => {
 
                     <div className="signup-link">
                         <p>
-                            Don’t have an account? <a href="/register">Register now</a>
+                            Don’t have an account?{' '}
+                            <a href="/register">Register now</a>
                         </p>
                     </div>
                 </form>

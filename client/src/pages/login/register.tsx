@@ -44,7 +44,7 @@ const RegisterLogin = () => {
 
         const passwordValidation = validatePasswordRequirements(password);
         if (!passwordValidation.isValid) {
-            errorNotify("Password does not meet requirements");
+            errorNotify('Password does not meet requirements');
             return;
         }
 
@@ -118,7 +118,10 @@ const RegisterLogin = () => {
                         </div>
 
                         <div className="form__div">
-                            <label className="label-input" htmlFor="confirmPassword">
+                            <label
+                                className="label-input"
+                                htmlFor="confirmPassword"
+                            >
                                 <p>Confirm Password</p>
                             </label>
                             <input
@@ -126,7 +129,9 @@ const RegisterLogin = () => {
                                 placeholder="Confirm your password"
                                 id="confirmPassword"
                                 value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onChange={(e) =>
+                                    setConfirmPassword(e.target.value)
+                                }
                                 required
                             />
                         </div>
@@ -137,7 +142,8 @@ const RegisterLogin = () => {
                     </button>
                     <div className="signup-link">
                         <p>
-                            Already have an account? <a href="/login">Login Now</a>
+                            Already have an account?{' '}
+                            <a href="/login">Login Now</a>
                         </p>
                     </div>
                 </form>

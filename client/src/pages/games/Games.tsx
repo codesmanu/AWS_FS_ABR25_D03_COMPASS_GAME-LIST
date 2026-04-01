@@ -1,13 +1,14 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import './Games.css';
 
 import Header from '../../components/header/Header';
-import SideBar from '../../components/sidebar/SideBar';
 import Button from '../../components/ui/Button/Button';
 import Table from '../../components/table/Table';
 import Modal, { type ModalMode } from '../../components/modals/Modal';
 import { gameFields } from '../../utils/fieldConfig';
 import type { ColumnDefinition, ActionConfig } from '../../types/Table.types';
+import { type LayoutOutletContext } from '../../Layout';
 
 import { type Game } from '../../types/Game.types';
 import useGameFilters from '../../hooks/useGameFilters';
@@ -19,11 +20,7 @@ import { LuPencil, LuTrash2 } from 'react-icons/lu';
 import { GET, POST, PATCH, DELETE } from '../../utils/apiClient';
 
 const Games: React.FC = () => {
-    const [isSideBarOpen, setIsSideBarOpen] = useState(true);
-    const toggleSideBar = useCallback(
-        () => setIsSideBarOpen((prev) => !prev),
-        [],
-    );
+    const { toggleSideBar } = useOutletContext<LayoutOutletContext>();
 
     const [gamesData, setGamesData] = useState<Game[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
@@ -81,7 +78,11 @@ const Games: React.FC = () => {
     useEffect(() => {
         const init = async () => {
             setLoading(true);
-            await Promise.allSettled([loadGames(), loadCategories(), loadPlatforms()]);
+            await Promise.allSettled([
+                loadGames(),
+                loadCategories(),
+                loadPlatforms(),
+            ]);
             setLoading(false);
         };
         init();
@@ -180,7 +181,9 @@ const Games: React.FC = () => {
                     description: formData.description || '',
                     imageUrl: formData.imageUrl || '',
                     status: statusValue,
-                    acquisitionDate: acquisitionDate ? acquisitionDate.toISOString() : null,
+                    acquisitionDate: acquisitionDate
+                        ? acquisitionDate.toISOString()
+                        : null,
                     finishDate: finishDate ? finishDate.toISOString() : null,
                     isFavorite: formData.isFavorite || false,
                     categoryId: formData.category,
@@ -190,21 +193,30 @@ const Games: React.FC = () => {
                 if (modalMode === 'add') {
                     const response = await POST<Game>('/game', gameData);
                     setGamesData((prev) => [...prev, response]);
-                    toast.success(`Game "${formData.title}" added successfully!`, {
-                        position: 'bottom-right',
-                        theme: 'dark',
-                    });
+                    toast.success(
+                        `Game "${formData.title}" added successfully!`,
+                        {
+                            position: 'bottom-right',
+                            theme: 'dark',
+                        },
+                    );
                 } else if (modalMode === 'edit' && selectedGame) {
-                    const response = await PATCH<Game>(`/game/${selectedGame.id}`, gameData);
+                    const response = await PATCH<Game>(
+                        `/game/${selectedGame.id}`,
+                        gameData,
+                    );
                     setGamesData((prev) =>
                         prev.map((game) =>
                             game.id === selectedGame.id ? response : game,
                         ),
                     );
-                    toast.success(`Game "${formData.title}" updated successfully!`, {
-                        position: 'bottom-right',
-                        theme: 'dark',
-                    });
+                    toast.success(
+                        `Game "${formData.title}" updated successfully!`,
+                        {
+                            position: 'bottom-right',
+                            theme: 'dark',
+                        },
+                    );
                 }
 
                 setIsModalOpen(false);
@@ -254,7 +266,10 @@ const Games: React.FC = () => {
                 isFavorite: !gameToToggle.isFavorite,
             };
 
-            const response = await PATCH<Game>(`/game/${gameToToggle.id}`, updatedData);
+            const response = await PATCH<Game>(
+                `/game/${gameToToggle.id}`,
+                updatedData,
+            );
 
             setGamesData((prevGames) =>
                 prevGames.map((game) =>
@@ -270,7 +285,6 @@ const Games: React.FC = () => {
         }
     }, []);
 
-
     const allCategories = useMemo(() => {
         return categories.map((category) => category.name);
     }, [categories]);
@@ -281,7 +295,9 @@ const Games: React.FC = () => {
                 id: 'imageUrl',
                 header: '',
                 accessor: (item) =>
-                    item.imageUrl ? <img src={item.imageUrl} alt={item.title} /> : null,
+                    item.imageUrl ? (
+                        <img src={item.imageUrl} alt={item.title} />
+                    ) : null,
                 sortable: false,
                 headerClassName: 'header-image-col',
                 cellClassName: 'cell-image',
@@ -340,7 +356,9 @@ const Games: React.FC = () => {
                 id: 'isFavorite',
                 header: 'Favorite',
                 accessor: (item: Game) => {
-                    const IconComponent = item.isFavorite ? IoMdStar : IoMdStarOutline;
+                    const IconComponent = item.isFavorite
+                        ? IoMdStar
+                        : IoMdStarOutline;
                     return (
                         <IconComponent
                             className={`action-icon favorite-icon ${item.isFavorite ? 'favorited' : ''}`}
@@ -368,8 +386,16 @@ const Games: React.FC = () => {
                 onClick: handleOpenViewModal,
                 tooltip: 'View Details',
             },
-            { icon: LuPencil, onClick: handleOpenEditModal, tooltip: 'Edit Game' },
-            { icon: LuTrash2, onClick: handleDeleteGame, tooltip: 'Delete Game' },
+            {
+                icon: LuPencil,
+                onClick: handleOpenEditModal,
+                tooltip: 'Edit Game',
+            },
+            {
+                icon: LuTrash2,
+                onClick: handleDeleteGame,
+                tooltip: 'Delete Game',
+            },
         ],
         [handleOpenViewModal, handleOpenEditModal, handleDeleteGame],
     );
@@ -385,11 +411,13 @@ const Games: React.FC = () => {
     return (
         <>
             <div id="games">
-                <SideBar isOpen={isSideBarOpen} />
                 <div className="content">
                     <Header onToggleSideBar={toggleSideBar}>Games</Header>
                     <div id="games-page">
-                        <Button className="newgame-button" onClick={handleOpenAddModal}>
+                        <Button
+                            className="newgame-button"
+                            onClick={handleOpenAddModal}
+                        >
                             NEW GAME
                         </Button>
                         <div className="filters">
@@ -403,7 +431,9 @@ const Games: React.FC = () => {
                             <select
                                 id="category-select"
                                 value={selectedCategory}
-                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                onChange={(e) =>
+                                    setSelectedCategory(e.target.value)
+                                }
                             >
                                 <option value="" disabled>
                                     Select Category
@@ -418,20 +448,30 @@ const Games: React.FC = () => {
                             <select
                                 id="filter-favorite"
                                 value={selectedFilterFavorite}
-                                onChange={(e) => setSelectedFilterFavorite(e.target.value)}
+                                onChange={(e) =>
+                                    setSelectedFilterFavorite(e.target.value)
+                                }
                             >
                                 <option value="" disabled>
                                     Filter Favorite
                                 </option>
                                 <option value="all">All</option>
                                 <option value="favorited">Favorited</option>
-                                <option value="no-favorited">Not Favorited</option>
+                                <option value="no-favorited">
+                                    Not Favorited
+                                </option>
                             </select>
                             <div className="filter-buttons">
-                                <Button className="clear-button" onClick={handleClearFilters}>
+                                <Button
+                                    className="clear-button"
+                                    onClick={handleClearFilters}
+                                >
                                     Clear
                                 </Button>
-                                <Button className="search-button" onClick={handleSearch}>
+                                <Button
+                                    className="search-button"
+                                    onClick={handleSearch}
+                                >
                                     Search <IoSearchOutline />
                                 </Button>
                             </div>
@@ -454,14 +494,16 @@ const Games: React.FC = () => {
                         modalMode === 'add'
                             ? 'Add New Game'
                             : modalMode === 'edit'
-                                ? 'Edit Game'
-                                : 'Game Details'
+                              ? 'Edit Game'
+                              : 'Game Details'
                     }
                     fields={dynamicGameFields}
                     mode={modalMode}
                     initialValues={selectedGame || emptyGameData}
                     onSubmit={handleSubmitGame}
-                    submitButtonText={modalMode === 'add' ? 'Add Game' : 'Save Changes'}
+                    submitButtonText={
+                        modalMode === 'add' ? 'Add Game' : 'Save Changes'
+                    }
                 />
             </div>
         </>

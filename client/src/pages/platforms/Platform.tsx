@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { GET, POST, PATCH, DELETE } from '../../utils/apiClient';
 import Modal, { type ModalMode } from '../../components/modals/Modal';
 import { platformFields } from '../../utils/fieldConfig';
@@ -7,28 +8,30 @@ import './Platform.css';
 import Remove from '../../components/remove/Remove';
 import Button from '../../components/ui/Button/Button';
 import Header from '../../components/header/Header';
-import SideBar from '../../components/sidebar/SideBar';
 import Table from '../../components/table/Table';
 import { type PlatformTypes } from '../../types/Platform.types';
-import { type ColumnDefinition, type ActionConfig } from '../../types/Table.types';
+import {
+    type ColumnDefinition,
+    type ActionConfig,
+} from '../../types/Table.types';
+import { type LayoutOutletContext } from '../../Layout';
 import { toast } from 'react-toastify';
 
 import { IoEyeOutline } from 'react-icons/io5';
 import { LuPencil, LuTrash2 } from 'react-icons/lu';
 
 const Platform: React.FC = () => {
-    const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+    const { toggleSideBar } = useOutletContext<LayoutOutletContext>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<ModalMode>('add');
     const [isRemoveModalOpen, setisRemoveModalOpen] = useState(false);
-    const [selectedPlatform, setSelectedPlatform] = useState<PlatformTypes | null>(null);
+    const [selectedPlatform, setSelectedPlatform] =
+        useState<PlatformTypes | null>(null);
 
     const [platformsData, setPlatformsData] = useState<PlatformTypes[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [authError, setAuthError] = useState<boolean>(false);
-
-    const toggleSideBar = () => setIsSideBarOpen((prev) => !prev);
 
     const loadPlatforms = useCallback(async () => {
         try {
@@ -96,18 +99,29 @@ const Platform: React.FC = () => {
                 ) {
                     delete cleanedData.acquisitionYear;
                 } else if (cleanedData.acquisitionYear) {
-                    cleanedData.acquisitionYear = Number(cleanedData.acquisitionYear);
+                    cleanedData.acquisitionYear = Number(
+                        cleanedData.acquisitionYear,
+                    );
                 }
 
                 console.log('Sending platform data:', cleanedData);
 
                 if (modalMode === 'add') {
-                    const response = await POST<PlatformTypes>('/platform', cleanedData);
-                    setPlatformsData((prevPlatforms) => [...prevPlatforms, response]);
-                    toast.success(`Platform "${cleanedData.name}" added successfully!`, {
-                        position: 'bottom-right',
-                        theme: 'dark',
-                    });
+                    const response = await POST<PlatformTypes>(
+                        '/platform',
+                        cleanedData,
+                    );
+                    setPlatformsData((prevPlatforms) => [
+                        ...prevPlatforms,
+                        response,
+                    ]);
+                    toast.success(
+                        `Platform "${cleanedData.name}" added successfully!`,
+                        {
+                            position: 'bottom-right',
+                            theme: 'dark',
+                        },
+                    );
                     setIsModalOpen(false);
                 } else if (modalMode === 'edit' && selectedPlatform) {
                     const response = await PATCH<PlatformTypes>(
@@ -116,13 +130,18 @@ const Platform: React.FC = () => {
                     );
                     setPlatformsData((prevPlatforms) =>
                         prevPlatforms.map((platform) =>
-                            platform.id === selectedPlatform.id ? response : platform,
+                            platform.id === selectedPlatform.id
+                                ? response
+                                : platform,
                         ),
                     );
-                    toast.success(`Platform "${cleanedData.name}" updated successfully!`, {
-                        position: 'bottom-right',
-                        theme: 'dark',
-                    });
+                    toast.success(
+                        `Platform "${cleanedData.name}" updated successfully!`,
+                        {
+                            position: 'bottom-right',
+                            theme: 'dark',
+                        },
+                    );
                     setIsModalOpen(false);
                 }
 
@@ -183,70 +202,75 @@ const Platform: React.FC = () => {
         }
     };
 
-    const handleDeletePlatform = useCallback(async (platform: PlatformTypes) => {
-        handleOpenDeleteModal(platform);
-    }, []);
+    const handleDeletePlatform = useCallback(
+        async (platform: PlatformTypes) => {
+            handleOpenDeleteModal(platform);
+        },
+        [],
+    );
 
     const platformColumns: ColumnDefinition<
         PlatformTypes,
         keyof PlatformTypes
     >[] = [
-            {
-                id: 'imageUrl',
-                header: '',
-                accessor: (item) =>
-                    item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : null,
-                sortable: false,
-                headerClassName: 'header-image-col',
-                cellClassName: 'cell-image',
-                width: '4rem',
-            },
-            {
-                id: 'name',
-                header: 'Name',
-                accessor: 'name',
-                sortable: true,
-                sortKey: 'name',
-                cellClassName: 'cell-title',
-                width: '2fr',
-            },
-            {
-                id: 'company',
-                header: 'Company',
-                accessor: 'company',
-                sortable: true,
-                sortKey: 'company',
-                cellClassName: 'cell-description',
-                width: '1fr',
-            },
-            {
-                id: 'acquisitionYear',
-                header: 'Acquisition Year',
-                accessor: 'acquisitionYear',
-                sortable: true,
-                sortKey: 'acquisitionYear',
-                cellClassName: 'cell-category',
-                width: '1.5fr',
-            },
-            {
-                id: 'createdAt',
-                header: 'Created At',
-                accessor: 'createdAt',
-                sortable: true,
-                sortKey: 'createdAt',
-                cellClassName: 'cell-created-at',
-                width: '1.5fr',
-            },
-            {
-                id: 'updatedAt',
-                header: 'Updated At',
-                accessor: 'updatedAt',
-                sortable: true,
-                sortKey: 'updatedAt',
-                cellClassName: 'cell-updated-at',
-                width: '1.5fr',
-            },
-        ];
+        {
+            id: 'imageUrl',
+            header: '',
+            accessor: (item) =>
+                item.imageUrl ? (
+                    <img src={item.imageUrl} alt={item.name} />
+                ) : null,
+            sortable: false,
+            headerClassName: 'header-image-col',
+            cellClassName: 'cell-image',
+            width: '4rem',
+        },
+        {
+            id: 'name',
+            header: 'Name',
+            accessor: 'name',
+            sortable: true,
+            sortKey: 'name',
+            cellClassName: 'cell-title',
+            width: '2fr',
+        },
+        {
+            id: 'company',
+            header: 'Company',
+            accessor: 'company',
+            sortable: true,
+            sortKey: 'company',
+            cellClassName: 'cell-description',
+            width: '1fr',
+        },
+        {
+            id: 'acquisitionYear',
+            header: 'Acquisition Year',
+            accessor: 'acquisitionYear',
+            sortable: true,
+            sortKey: 'acquisitionYear',
+            cellClassName: 'cell-category',
+            width: '1.5fr',
+        },
+        {
+            id: 'createdAt',
+            header: 'Created At',
+            accessor: 'createdAt',
+            sortable: true,
+            sortKey: 'createdAt',
+            cellClassName: 'cell-created-at',
+            width: '1.5fr',
+        },
+        {
+            id: 'updatedAt',
+            header: 'Updated At',
+            accessor: 'updatedAt',
+            sortable: true,
+            sortKey: 'updatedAt',
+            cellClassName: 'cell-updated-at',
+            width: '1.5fr',
+        },
+    ];
 
     const platformActions: ActionConfig<PlatformTypes>[] = [
         {
@@ -273,11 +297,13 @@ const Platform: React.FC = () => {
     return (
         <>
             <div id="platform">
-                <SideBar isOpen={isSideBarOpen} />
                 <div className="platform-content">
                     <Header onToggleSideBar={toggleSideBar}>Platforms</Header>
                     <div className="platform-page">
-                        <Button className="new-platorm-button" onClick={handleOpenAddModal}>
+                        <Button
+                            className="new-platorm-button"
+                            onClick={handleOpenAddModal}
+                        >
                             NEW PLATFORM
                         </Button>
 
@@ -285,7 +311,9 @@ const Platform: React.FC = () => {
                             data={platformsData}
                             columns={platformColumns}
                             actions={platformActions}
-                            onRowClick={(row) => console.log('Row clicked:', row)}
+                            onRowClick={(row) =>
+                                console.log('Row clicked:', row)
+                            }
                             noItemsMessage="No platforms found, try adding one!"
                             initialSortBy="name"
                             initialSortDirection="asc"
@@ -300,8 +328,8 @@ const Platform: React.FC = () => {
                         modalMode === 'add'
                             ? 'Add New Platform'
                             : modalMode === 'edit'
-                                ? 'Edit Platform'
-                                : 'Platform Details'
+                              ? 'Edit Platform'
+                              : 'Platform Details'
                     }
                     fields={platformFields}
                     mode={modalMode}

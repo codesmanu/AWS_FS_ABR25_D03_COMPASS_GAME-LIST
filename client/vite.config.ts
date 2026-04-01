@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react-swc';
 export default defineConfig({
     plugins: [react()],
     build: {
-        target: "esnext"
+        target: 'esnext',
     },
     resolve: {
         alias: {
@@ -17,7 +17,7 @@ export default defineConfig({
             '/api': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
-                ws: false
+                ws: false,
             },
         },
     },

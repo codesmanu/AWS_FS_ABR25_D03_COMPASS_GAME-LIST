@@ -5,21 +5,21 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: var(--color-overlay-soft);
 }
 
 .spinner {
     width: 48px;
     height: 48px;
-    border: 5px solid rgba(0, 0, 0, 0.15);
-    border-top-color: #0b74de;
+    border: 5px solid var(--color-border-light);
+    border-top-color: var(--color-primary);
     border-radius: 50%;
     animation: spin 0.9s linear infinite;
 }
 
 .loading-container p {
     margin-top: 12px;
-    color: #111;
+    color: var(--color-text-soft);
     font-weight: 600;
 }
 

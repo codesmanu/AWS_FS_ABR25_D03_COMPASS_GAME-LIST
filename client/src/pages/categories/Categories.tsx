@@ -1,22 +1,23 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { GET, POST, PATCH, DELETE } from '../../utils/apiClient';
 import Modal, { type ModalMode } from '../../components/modals/Modal';
 import { categoryFields } from '../../utils/fieldConfig';
 import './Categories.css';
 
 import Header from '../../components/header/Header';
-import SideBar from '../../components/sidebar/SideBar';
 import Button from '../../components/ui/Button/Button';
 import Table from '../../components/table/Table';
 import type { ColumnDefinition, ActionConfig } from '../../types/Table.types';
 import { type Category } from '../../types/Category.types';
+import { type LayoutOutletContext } from '../../Layout';
 import { toast } from 'react-toastify';
 
 import { LuPencil, LuTrash2 } from 'react-icons/lu';
 import Remove from '../../components/remove/Remove';
 
 const Categories: React.FC = () => {
-    const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+    const { toggleSideBar } = useOutletContext<LayoutOutletContext>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<ModalMode>('add');
     const [isRemoveModalOpen, setisRemoveModalOpen] = useState(false);
@@ -27,8 +28,6 @@ const Categories: React.FC = () => {
     const [categoriesData, setCategoriesData] = useState<Category[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-
-    const toggleSideBar = () => setIsSideBarOpen((prev) => !prev);
 
     const loadCategories = useCallback(async () => {
         try {
@@ -82,12 +81,21 @@ const Categories: React.FC = () => {
                 setLoading(true);
 
                 if (modalMode === 'add') {
-                    const response = await POST<Category>('/category', formData);
-                    setCategoriesData((prevCategories) => [...prevCategories, response]);
-                    toast.success(`Category "${response.name}" added successfully!`, {
-                        position: 'bottom-right',
-                        theme: 'dark',
-                    });
+                    const response = await POST<Category>(
+                        '/category',
+                        formData,
+                    );
+                    setCategoriesData((prevCategories) => [
+                        ...prevCategories,
+                        response,
+                    ]);
+                    toast.success(
+                        `Category "${response.name}" added successfully!`,
+                        {
+                            position: 'bottom-right',
+                            theme: 'dark',
+                        },
+                    );
                     setIsModalOpen(false);
                 } else if (modalMode === 'edit' && selectedCategory) {
                     const response = await PATCH<Category>(
@@ -96,13 +104,18 @@ const Categories: React.FC = () => {
                     );
                     setCategoriesData((prevCategories) =>
                         prevCategories.map((category) =>
-                            category.id === selectedCategory.id ? response : category,
+                            category.id === selectedCategory.id
+                                ? response
+                                : category,
                         ),
                     );
-                    toast.success(`Category "${response.name}" updated successfully!`, {
-                        position: 'bottom-right',
-                        theme: 'dark',
-                    });
+                    toast.success(
+                        `Category "${response.name}" updated successfully!`,
+                        {
+                            position: 'bottom-right',
+                            theme: 'dark',
+                        },
+                    );
                     setIsModalOpen(false);
                 }
 
@@ -149,47 +162,48 @@ const Categories: React.FC = () => {
         handleOpenDeleteModal(category);
     }, []);
 
-    const categoryColumns: ColumnDefinition<Category, keyof Category>[] = useMemo(
-        () => [
-            {
-                id: 'name',
-                header: 'Name',
-                accessor: 'name',
-                sortable: true,
-                sortKey: 'name',
-                cellClassName: 'cell-category-name',
-                width: '1fr',
-            },
-            {
-                id: 'description',
-                header: 'Description',
-                accessor: 'description',
-                sortable: true,
-                sortKey: 'description',
-                cellClassName: 'cell-category-description',
-                width: '2fr',
-            },
-            {
-                id: 'createdAt',
-                header: 'Created At',
-                accessor: 'createdAt',
-                sortable: true,
-                sortKey: 'createdAt',
-                cellClassName: 'cell-category-created-at',
-                width: '1fr',
-            },
-            {
-                id: 'updatedAt',
-                header: 'Updated At',
-                accessor: 'updatedAt',
-                sortable: true,
-                sortKey: 'updatedAt',
-                cellClassName: 'cell-category-updated-at',
-                width: '1fr',
-            },
-        ],
-        [],
-    );
+    const categoryColumns: ColumnDefinition<Category, keyof Category>[] =
+        useMemo(
+            () => [
+                {
+                    id: 'name',
+                    header: 'Name',
+                    accessor: 'name',
+                    sortable: true,
+                    sortKey: 'name',
+                    cellClassName: 'cell-category-name',
+                    width: '1fr',
+                },
+                {
+                    id: 'description',
+                    header: 'Description',
+                    accessor: 'description',
+                    sortable: true,
+                    sortKey: 'description',
+                    cellClassName: 'cell-category-description',
+                    width: '2fr',
+                },
+                {
+                    id: 'createdAt',
+                    header: 'Created At',
+                    accessor: 'createdAt',
+                    sortable: true,
+                    sortKey: 'createdAt',
+                    cellClassName: 'cell-category-created-at',
+                    width: '1fr',
+                },
+                {
+                    id: 'updatedAt',
+                    header: 'Updated At',
+                    accessor: 'updatedAt',
+                    sortable: true,
+                    sortKey: 'updatedAt',
+                    cellClassName: 'cell-category-updated-at',
+                    width: '1fr',
+                },
+            ],
+            [],
+        );
 
     const categoryActions: ActionConfig<Category>[] = useMemo(
         () => [
@@ -211,16 +225,20 @@ const Categories: React.FC = () => {
 
     return (
         <div id="categories">
-            <SideBar isOpen={isSideBarOpen} />
             <div className="category-content">
                 <Header onToggleSideBar={toggleSideBar}>Categories</Header>
                 <div id="category-page">
-                    <Button className="newcategory-button" onClick={handleOpenAddModal}>
+                    <Button
+                        className="newcategory-button"
+                        onClick={handleOpenAddModal}
+                    >
                         NEW CATEGORY
                     </Button>
 
                     {error && <div className="error-message">{error}</div>}
-                    {loading && <div className="loading-indicator">Loading...</div>}
+                    {loading && (
+                        <div className="loading-indicator">Loading...</div>
+                    )}
 
                     <Table<Category, keyof Category>
                         data={categoriesData}
@@ -240,12 +258,16 @@ const Categories: React.FC = () => {
             <Modal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                title={modalMode === 'add' ? 'Add New Category' : 'Edit Category'}
+                title={
+                    modalMode === 'add' ? 'Add New Category' : 'Edit Category'
+                }
                 fields={categoryFields}
                 mode={modalMode}
                 initialValues={selectedCategory || {}}
                 onSubmit={handleSubmitCategory}
-                submitButtonText={modalMode === 'add' ? 'Add Category' : 'Save Changes'}
+                submitButtonText={
+                    modalMode === 'add' ? 'Add Category' : 'Save Changes'
+                }
             />
 
             <Remove

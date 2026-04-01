@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GET } from '../../utils/apiClient';
 
 import Header from '../../components/header/Header';
-import SideBar from '../../components/sidebar/SideBar';
 import './Home.css';
 import Card from '../../components/ui/Card/Card';
+import { type LayoutOutletContext } from '../../Layout';
 
 import {
     IoGameControllerOutline,
@@ -15,7 +16,7 @@ import {
 import { IoMdStarOutline } from 'react-icons/io';
 
 const Home = () => {
-    const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+    const { toggleSideBar } = useOutletContext<LayoutOutletContext>();
     const [userName] = useState(sessionStorage.getItem('nickname') || 'User');
     const [dashboardData, setDashboardData] = useState({
         totalGames: 0,
@@ -24,8 +25,6 @@ const Home = () => {
         favoriteGamesCount: 0,
     });
     const [loading, setLoading] = useState(true);
-
-    const toggleSideBar = () => setIsSideBarOpen((prev) => !prev);
 
     useEffect(() => {
         const loadDashboardData = async () => {
@@ -45,7 +44,8 @@ const Home = () => {
                 });
             } catch (err: any) {
                 toast.error(
-                    err.response?.data?.message || 'Error loading dashboard data',
+                    err.response?.data?.message ||
+                        'Error loading dashboard data',
                     {
                         position: 'bottom-right',
                         theme: 'dark',
@@ -58,7 +58,6 @@ const Home = () => {
 
         loadDashboardData();
     }, []);
-
 
     const categoriesToDisplay = [
         {
@@ -90,14 +89,11 @@ const Home = () => {
     return (
         <>
             <div id="home">
-                <SideBar isOpen={isSideBarOpen} />
                 <div className="content">
                     <Header onToggleSideBar={toggleSideBar} />
                     <div id="home-page">
                         <div className="greetings">
-                            <h1>
-                                Hello, {loading ? 'Loading...' : userName}
-                            </h1>
+                            <h1>Hello, {loading ? 'Loading...' : userName}</h1>
                             <p>Choose one of options below.</p>
                         </div>
                         <div className="home-cards">

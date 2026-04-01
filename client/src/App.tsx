@@ -4,6 +4,7 @@ import { GET } from './utils/apiClient';
 import Coockie from 'js-cookie';
 
 const Loading = lazy(() => import('@/components/loading/Loading'));
+const Layout = lazy(() => import('@/Layout'));
 const Home = lazy(() => import('@/pages/home/Home'));
 const Login = lazy(() => import('@/pages/login/login'));
 const Register = lazy(() => import('@/pages/login/register'));
@@ -12,7 +13,6 @@ const Games = lazy(() => import('@/pages/games/Games'));
 const Categories = lazy(() => import('@/pages/categories/Categories'));
 
 export default function App() {
-
     const [authenticated, setAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
 
@@ -20,9 +20,12 @@ export default function App() {
         setLoading(true);
         const checkAuth = async () => {
             try {
-                const { token, account } = await GET<{ token: string, account: { nickname: string } }>('/account/refresh');
+                const { token, account } = await GET<{
+                    token: string;
+                    account: { nickname: string };
+                }>('/account/refresh');
                 Coockie.set('token', token);
-                console.log(account.nickname)
+                console.log(account.nickname);
                 sessionStorage.setItem('nickname', account.nickname);
                 setAuthenticated(true);
             } catch {
@@ -40,18 +43,24 @@ export default function App() {
     return (
         <Routes>
             {authenticated ? (
-                <>
+                <Route element={<Layout />}>
                     <Route path="/dashboard" element={<Home />} />
                     <Route path="/games" element={<Games />} />
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/platforms" element={<Platform />} />
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                </>
+                    <Route
+                        path="*"
+                        element={<Navigate to="/dashboard" replace />}
+                    />
+                </Route>
             ) : (
                 <>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="*" element={<Navigate to="/login" replace />} />
+                    <Route
+                        path="*"
+                        element={<Navigate to="/login" replace />}
+                    />
                 </>
             )}
         </Routes>
